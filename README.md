@@ -1,50 +1,53 @@
-# React + TypeScript + Vite
+# AWS Badge Aligner
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+AWS認定デジタルバッジを並び替えるアプリケーションです。
 
-Currently, two official plugins are available:
+## 機能
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- Credlyからダウンロードしたデジタルバッジファイルをアップロードし、並び替えたものをダウンロードすることができます。
+- 2025年1月15日現在で有効である資格15種類に対応しています。
 
-## Expanding the ESLint configuration
+## 対応資格
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- Cloud Practitioner
+- Solutions Architect Associate
+- Solutions Architect Professional
+- Developer Associate
+- SysOps Administrator Associate
+- Data Analytics Specialty
+- Machine Learning Specialty
+- Advanced Networking Specialty
+- Security Specialty
+- DevOps Engineer Professional
+- DataBase Specialty
+- SAP on AWS Professional
+- Data Engineer Associate
+- Machine Learning Associate
+- AI Practitioner
 
-- Configure the top-level `parserOptions` property like this:
+## 資格の追加
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
+追加で対応させたい資格がある場合、[src/config/aws-certifications.ts](src/config/aws-certifications.ts)に追記することで並び替えることができます。
+
+```ts
+export const AWS_CERTIFICATIONS = [
+  {
+    code: "NEW",
+    name: "New Certification",
+    expectedFileName: "aws-certified-new-certification.png",
   },
-})
+  // 他の資格情報...
+];
 ```
-
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
-
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
-
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
+# 使用方法
+1. リポジトリをクローンします。
+2. 必要な依存関係をインストールします。
 ```
+npm install
+```
+3. 開発サーバーを起動します。
+```
+npm run dev
+```
+4. ブラウザでアプリケーションにアクセスします。
+5. Credlyからダウンロードしたデジタルバッジファイルをアップロードし、並び替えたものをダウンロードします。
