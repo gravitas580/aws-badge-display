@@ -106,6 +106,18 @@ const AWSSertificationBadgeAligner: React.FC = () => {
         }
     };
 
+    const clearAllBadges = () => {
+        setSelectedBadges(Array(24).fill(''));
+        setGeneratedImage(null);
+        if (canvasRef.current) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+    };
+
     const generateBadgeImage = async () => {
         if (!canvasRef.current) return;
 
@@ -116,12 +128,22 @@ const AWSSertificationBadgeAligner: React.FC = () => {
         const badgeEdge = 200;
         const margin = 15;
 
-        canvas.width = 1500;
-        canvas.height = 800;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+        // Calculate the required canvas size based on the positions of the badges
         const positions = getPositions(4, 6, badgeEdge, margin);
         setPositions(positions); // 計算された位置を状態に保存
+
+        // Determine the maximum width and height needed for the canvas
+        let maxWidth = 0;
+        let maxHeight = 0;
+        positions.forEach(position => {
+            if (position.w + badgeEdge > maxWidth) maxWidth = position.w + badgeEdge;
+            if (position.h + badgeEdge > maxHeight) maxHeight = position.h + badgeEdge;
+        });
+
+        // Set the canvas size to fit all badges without extra space
+        canvas.width = maxWidth;
+        canvas.height = maxHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const imagesToPlace = selectedBadges.filter(code => code !== '');
 
@@ -170,7 +192,8 @@ const AWSSertificationBadgeAligner: React.FC = () => {
             for (let colNo = 0; colNo < ncols; colNo++) {
                 const xOffset = (rowNo % 2 === 0) ? 0 : horizontalSpacing / 2; 
                 const x = colNo * horizontalSpacing + xOffset; 
-                const y = rowNo * verticalSpacing; positions.push({ h: y, w: x });
+                const y = rowNo * verticalSpacing; 
+                positions.push({ h: y, w: x });
             }
         } 
         return positions; 
@@ -196,7 +219,7 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                         label="AWS認定バッジ画像をアップロード"
                         InputLabelProps={{ shrink: true }}
                     />
-                     <TableContainer component={Paper} sx={{ mb: 2, borderRadius: '8px', border: '1px solid #ccc' }}>
+                       <TableContainer component={Paper} sx={{ mb: 2, borderRadius: '8px', border: '1px solid #ccc' }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
@@ -219,6 +242,16 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                             </TableBody>
                         </Table>
                     </TableContainer>
+
+                    <Button 
+                        size='small'
+                        variant="contained"
+                        color='inherit'
+                        onClick={clearAllBadges}
+                        sx={{ mt: 2, mb: 2 }}
+                    >
+                        選択をすべてクリア
+                    </Button>
 
                     <Grid container spacing={2}>
                         {[...Array(24)].map((_, index) => (
@@ -260,6 +293,8 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                     >
                         バッジ画像を生成
                     </Button>
+
+
 
                     {generatedImage && (
                         <Card sx={{ mt: 2 }}>
