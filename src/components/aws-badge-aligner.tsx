@@ -120,33 +120,36 @@ const AWSSertificationBadgeAligner: React.FC = () => {
 
     const generateBadgeImage = async () => {
         if (!canvasRef.current) return;
-
+    
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
-
+    
         const badgeEdge = 200;
         const margin = 15;
-
+    
         // Calculate the required canvas size based on the positions of the badges
         const positions = getPositions(4, 6, badgeEdge, margin);
         setPositions(positions); // 計算された位置を状態に保存
-
-        // Determine the maximum width and height needed for the canvas
+    
+        // Determine the maximum width and height needed for the canvas based on selected badges
         let maxWidth = 0;
         let maxHeight = 0;
-        positions.forEach(position => {
-            if (position.w + badgeEdge > maxWidth) maxWidth = position.w + badgeEdge;
-            if (position.h + badgeEdge > maxHeight) maxHeight = position.h + badgeEdge;
+        selectedBadges.forEach((code, index) => {
+            if (code !== '') {
+                const position = positions[index];
+                if (position.w + badgeEdge > maxWidth) maxWidth = position.w + badgeEdge;
+                if (position.h + badgeEdge > maxHeight) maxHeight = position.h + badgeEdge;
+            }
         });
-
+    
         // Set the canvas size to fit all badges without extra space
         canvas.width = maxWidth;
         canvas.height = maxHeight;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
+    
         const imagesToPlace = selectedBadges.filter(code => code !== '');
-
+    
         const loadImage = (file: File): Promise<HTMLImageElement> => {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -159,11 +162,11 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                 reader.readAsDataURL(file);
             });
         };
-
+    
         try {
             const imagePromises = imagesToPlace.map(code => loadImage(uploadedImages[code].file));
             const images = await Promise.all(imagePromises);
-
+    
             selectedBadges.forEach((code, index) => {
                 if (code !== '') {
                     const imgIndex = imagesToPlace.indexOf(code);
@@ -173,13 +176,14 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                     }
                 }
             });
-
+    
             setGeneratedImage(canvas.toDataURL('image/png'));
-
+    
         } catch (error) {
             console.error('画像の読み込みに失敗しました', error);
         }
     };
+    
 
     function getPositions(nrows: number, ncols: number, badgeEdge: number, margin: number = 0): Point2D[] { 
         const positions: Point2D[] = []; 
@@ -219,7 +223,7 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                         label="AWS認定バッジ画像をアップロード"
                         InputLabelProps={{ shrink: true }}
                     />
-                       <TableContainer component={Paper} sx={{ mb: 2, borderRadius: '8px', border: '1px solid #ccc' }}>
+                    <TableContainer component={Paper} sx={{ mb: 2, borderRadius: '8px', border: '1px solid #ccc' }}>
                         <Table>
                             <TableHead>
                                 <TableRow>
