@@ -4,6 +4,7 @@ import { CssBaseline, Container, Box } from '@mui/material';
 import AWSSertificationBadgeAligner from './components/aws-badge-aligner';
 import './App.css';
 
+
 // デフォルトのダークテーマを作成
 const theme = createTheme({
   palette: {
