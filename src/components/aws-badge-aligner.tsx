@@ -56,7 +56,7 @@ const AWSSertificationBadgeAligner: React.FC = () => {
     const [uploadedImages, setUploadedImages] = useState<{ [key: string]: BadgeInfo }>({});
     const [selectedBadges, setSelectedBadges] = useState<string[]>(Array(24).fill(''));
     const [generatedImage, setGeneratedImage] = useState<string | null>(null);
-    const [positions, setPositions] = useState<Point2D[]>([]);
+    const [setPositions] = useState<Point2D[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
