@@ -46,10 +46,17 @@ interface BadgeInfo {
     isOfficialBadge: boolean;
 }
 
+// Point2D型の定義
+interface Point2D {
+    readonly h: number;
+    readonly w: number;
+}
+
 const AWSSertificationBadgeAligner: React.FC = () => {
     const [uploadedImages, setUploadedImages] = useState<{ [key: string]: BadgeInfo }>({});
     const [selectedBadges, setSelectedBadges] = useState<string[]>(Array(24).fill(''));
     const [generatedImage, setGeneratedImage] = useState<string | null>(null);
+    const [positions, setPositions] = useState<Point2D[]>([]);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -107,13 +114,14 @@ const AWSSertificationBadgeAligner: React.FC = () => {
         if (!ctx) return;
 
         const badgeEdge = 200;
-        const margin = 20;
+        const margin = 15;
 
         canvas.width = 1500;
         canvas.height = 800;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
         const positions = getPositions(4, 6, badgeEdge, margin);
+        setPositions(positions); // 計算された位置を状態に保存
 
         const imagesToPlace = selectedBadges.filter(code => code !== '');
 
@@ -134,33 +142,38 @@ const AWSSertificationBadgeAligner: React.FC = () => {
             const imagePromises = imagesToPlace.map(code => loadImage(uploadedImages[code].file));
             const images = await Promise.all(imagePromises);
 
-            images.forEach((img, index) => {
-                const position = positions[index];
-                ctx.drawImage(img, position.w, position.h, badgeEdge, badgeEdge);
+            selectedBadges.forEach((code, index) => {
+                if (code !== '') {
+                    const imgIndex = imagesToPlace.indexOf(code);
+                    if (imgIndex !== -1) {
+                        const position = positions[index];
+                        ctx.drawImage(images[imgIndex], position.w, position.h, badgeEdge, badgeEdge);
+                    }
+                }
             });
 
             setGeneratedImage(canvas.toDataURL('image/png'));
+
         } catch (error) {
             console.error('画像の読み込みに失敗しました', error);
         }
     };
 
-    function getPositions(nrows: number, ncols: number, badgeEdge: number, margin: number = 0): Point2D[] {
-        const positions: Point2D[] = [];
+    function getPositions(nrows: number, ncols: number, badgeEdge: number, margin: number = 0): Point2D[] { 
+        const positions: Point2D[] = []; 
         const hexHeight = Math.sqrt(3) * badgeEdge / 2;
-        const hexWidth = badgeEdge;
-        const verticalSpacing = hexHeight + margin;
-        const horizontalSpacing = hexWidth * 3 / 4 + margin;
+        const hexWidth = badgeEdge; 
+        const verticalSpacing = 3 / 4 * hexHeight + margin; 
+        const horizontalSpacing = hexWidth * 3 / 4 + margin; 
 
-        for (let rowNo = 0; rowNo < nrows; rowNo++) {
+        for (let rowNo = 0; rowNo < nrows; rowNo++) { 
             for (let colNo = 0; colNo < ncols; colNo++) {
-                const xOffset = (rowNo % 2 === 0) ? 0 : horizontalSpacing / 2;
-                const x = colNo * horizontalSpacing + xOffset;
-                const y = rowNo * verticalSpacing;
-                positions.push({ h: y, w: x });
+                const xOffset = (rowNo % 2 === 0) ? 0 : horizontalSpacing / 2; 
+                const x = colNo * horizontalSpacing + xOffset; 
+                const y = rowNo * verticalSpacing; positions.push({ h: y, w: x });
             }
-        }
-        return positions;
+        } 
+        return positions; 
     }
 
     const availableCertifications = Object.keys(uploadedImages).filter(code => !selectedBadges.includes(code));
@@ -207,102 +220,83 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                         </Table>
                     </TableContainer>
 
-<Grid container spacing={2}>
-    {[...Array(24)].map((_, index) => (
-        <Grid item xs={2} key={index}>
-            <Select
-                fullWidth
-                value={selectedBadges[index]}
-                onChange={(e: SelectChangeEvent<string>) => 
-                    handleBadgeSelect(index, e.target.value)
-                }
-                displayEmpty
-                renderValue={(selected) => {
-                    if (selected === '') {
-                        return <em>クリア</em>;
-                    }
-                    return selected;
-                }}
-            >
-                <MenuItem value="">
-                    <em>クリア</em>
-                </MenuItem>
-                {availableCertifications.map(code => (
-                    <MenuItem key={code} value={code}>
-                        {code}
-                    </MenuItem>
-                ))}
-            </Select>
-        </Grid>
-    ))}
-</Grid>
+                    <Grid container spacing={2}>
+                        {[...Array(24)].map((_, index) => (
+                            <Grid item xs={2} key={index}>
+                                <Select
+                                    fullWidth
+                                    value={selectedBadges[index]}
+                                    onChange={(e: SelectChangeEvent<string>) => 
+                                        handleBadgeSelect(index, e.target.value)
+                                    }
+                                    displayEmpty
+                                    renderValue={(selected) => {
+                                        if (selected === '') {
+                                            return <em>クリア</em>;
+                                        }
+                                        return selected;
+                                    }}
+                                >
+                                    <MenuItem value="">
+                                        <em>クリア</em>
+                                    </MenuItem>
+                                    {availableCertifications.map(code => (
+                                        <MenuItem key={code} value={code}>
+                                            {code}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </Grid>
+                        ))}
+                    </Grid>
 
-<Typography variant="h6" sx={{ mt: 2 }}>
-    デバッグ情報
-</Typography>
-<Grid container spacing={2}>
-    {selectedBadges.map((code, index) => (
-        <Grid item xs={2} key={index}>
-            <Typography variant="body2">
-                {`(${Math.floor(index / 6) + 1},${index % 6 + 1}): ${code}`}
-            </Typography>
-        </Grid>
-    ))}
-</Grid>
+                    <Button 
+                        fullWidth
+                        variant="contained" 
+                        color="primary" 
+                        onClick={generateBadgeImage}
+                        disabled={selectedBadges.filter(badge => badge !== '').length === 0}
+                        sx={{ mt: 2, mb: 2 }}
+                    >
+                        バッジ画像を生成
+                    </Button>
 
-<Button 
-    fullWidth
-    variant="contained" 
-    color="primary" 
-    onClick={generateBadgeImage}
-    disabled={selectedBadges.filter(badge => badge !== '').length === 0}
-    sx={{ mt: 2, mb: 2 }}
->
-    バッジ画像を生成
-</Button>
+                    {generatedImage && (
+                        <Card sx={{ mt: 2 }}>
+                            <CardContent>
+                                <Typography variant="h6" sx={{ mb: 2 }}>
+                                    生成されたバッジ
+                                </Typography>
+                                <img 
+                                    src={generatedImage} 
+                                    alt="Generated Badge" 
+                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                />
+                                <Button 
+                                    variant="contained" 
+                                    color="secondary" 
+                                    sx={{ mt: 2 }}
+                                    onClick={() => {
+                                        const link = document.createElement('a');
+                                        link.href = generatedImage;
+                                        link.download = 'generated_badge.png';
+                                        link.click();
+                                    }}
+                                >
+                                    ダウンロード
+                                </Button>
+                            </CardContent>
+                        </Card>
+                    )}
 
-{generatedImage && (
-    <Card sx={{ mt: 2 }}>
-        <CardContent>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-                生成されたバッジ
-            </Typography>
-            <img 
-                src={generatedImage} 
-                alt="Generated Badge" 
-                style={{ maxWidth: '100%', height: 'auto' }}
-            />
-            <Button 
-                variant="contained" 
-                color="secondary" 
-                sx={{ mt: 2 }}
-                onClick={() => {
-                    const link = document.createElement('a');
-                    link.href = generatedImage;
-                    link.download = 'generated_badge.png';
-                    link.click();
-                }}
-            >
-                ダウンロード
-            </Button>
-        </CardContent>
-    </Card>
-)}
-
-<canvas 
-    ref={canvasRef} 
-    style={{ display: 'none' }}
-/>
-</CardContent>
-</Card>
-</DndProvider>
-);
+                    <canvas 
+                        ref={canvasRef} 
+                        style={{ display: 'none' }}
+                    />
+                </CardContent>
+            </Card>
+        </DndProvider>
+    );
 };
 
 export default AWSSertificationBadgeAligner;
-
-// Point2D型の定義
-interface Point2D {
-readonly h: number;
-readonly w: number;
-}
