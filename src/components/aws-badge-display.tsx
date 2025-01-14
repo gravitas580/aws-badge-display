@@ -203,7 +203,7 @@ const AWSSertificationBadgeDisplay: React.FC = () => {
                         ref={fileInputRef}
                         onChange={handleFileUpload}
                         sx={{ mb: 2 }}
-                        label="AWS認定バッジ画像をアップロード"
+                        label="AWS認定デジタルバッジ画像をアップロード"
                         InputLabelProps={{ shrink: true }}
                     />
                     <TableContainer component={Paper} sx={{ mb: 2, borderRadius: '8px', border: '1px solid #ccc' }}>
