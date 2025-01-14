@@ -1,7 +1,7 @@
 import React from 'react';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { CssBaseline, Container, Box } from '@mui/material';
-import AWSSertificationBadgeAligner from './components/aws-badge-aligner';
+import AWSSertificationBadgeDisplay from './components/aws-badge-display';
 import './App.css';
 
 
@@ -45,7 +45,7 @@ const App: React.FC = () => {
             padding: 2
           }}
         >
-          <AWSSertificationBadgeAligner />
+          <AWSSertificationBadgeDisplay />
         </Box>
       </Container>
     </ThemeProvider>

@@ -35,7 +35,7 @@ interface Point2D {
     readonly w: number;
 }
 
-const AWSSertificationBadgeAligner: React.FC = () => {
+const AWSSertificationBadgeDisplay: React.FC = () => {
     const [uploadedImages, setUploadedImages] = useState<{ [key: string]: BadgeInfo }>({});
     const [selectedBadges, setSelectedBadges] = useState<string[]>(Array(24).fill(''));
     const [generatedImage, setGeneratedImage] = useState<string | null>(null);
@@ -191,7 +191,7 @@ const AWSSertificationBadgeAligner: React.FC = () => {
     return (
         <DndProvider backend={HTML5Backend}>
             <Card sx={{ width: '100%', maxWidth: 1200, margin: 'auto' }}>
-                <CardHeader title="AWS認定バッジ アライナー" />
+                <CardHeader title="AWS Badge Display" />
                 <CardContent>
                     <TextField
                         fullWidth
@@ -321,4 +321,4 @@ const AWSSertificationBadgeAligner: React.FC = () => {
     );
 };
 
-export default AWSSertificationBadgeAligner;
+export default AWSSertificationBadgeDisplay;

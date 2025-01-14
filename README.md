@@ -1,4 +1,4 @@
-# AWS Badge Aligner
+# AWS Badge Diplay
 
 AWS認定デジタルバッジを並び替えるアプリケーションです。
 
