@@ -318,7 +318,7 @@ const AWSSertificationBadgeAligner: React.FC = () => {
                                     onClick={() => {
                                         const link = document.createElement('a');
                                         link.href = generatedImage;
-                                        link.download = 'generated_badge.png';
+                                        link.download = 'aws-badges.png';
                                         link.click();
                                     }}
                                 >
