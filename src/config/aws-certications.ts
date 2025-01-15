@@ -56,11 +56,6 @@ export const AWS_CERTIFICATIONS = [
     expectedFileName: "aws-certified-database-specialty.png",
   },
   {
-    code: "DOP",
-    name: "SAP on AWS Professional",
-    expectedFileName: "aws-certified-sap-on-aws-speciality.png",
-  },
-  {
     code: "DEA",
     name: "Data Engineer Associate",
     expectedFileName: "aws-certified-data-engineer-associate.png",
@@ -74,5 +69,10 @@ export const AWS_CERTIFICATIONS = [
     code: "AIF",
     name: "AI Practitioner",
     expectedFileName: "aws-certified-ai-practitioner.png",
+  },
+  {
+    code: "PAS",
+    name: "SAP on AWS Specialty",
+    expectedFileName: "aws-certified-sap-on-aws-specialty.png",
   },
 ];
